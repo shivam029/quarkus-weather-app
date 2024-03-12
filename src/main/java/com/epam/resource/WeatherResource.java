@@ -5,14 +5,10 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
 import com.epam.exception.NoWeatherDataAvailableException;
+import com.epam.model.OpenWeatherMapResponse;
 import com.epam.model.WeatherResponseModel;
 import com.epam.service.WeatherService;
-import com.epam.util.JsonParser;
 import com.epam.util.WeatherResponseConverter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -37,36 +33,16 @@ public class WeatherResource {
 	public WeatherResponseModel getByCoordinates(@PathParam("latitude") String latitude,
 			@PathParam("longitude") String longitude) throws NoWeatherDataAvailableException {
 
-		Object resSourceJsonString = weatherService.getByCoordinates(latitude, longitude, appid);
-		LOG.info("resSourceJsonString getByCoordinates " + resSourceJsonString);
+		OpenWeatherMapResponse responseSourceJson = weatherService.getByCoordinates(latitude, longitude, appid);
+		
+		LOG.info("status_code:"+responseSourceJson.getCod());
+		
+		if (responseSourceJson.getCod() == 401 || responseSourceJson.getCod() == 400) {
 
-		JsonNode node = null;
-		try {
-			node = JsonParser.parse(resSourceJsonString.toString());
-		} catch (JsonMappingException e) {
-			LOG.info("JsonMappingException " + e.getMessage());
-		} catch (JsonProcessingException e) {
-			LOG.info("JsonProcessingException " + e.getMessage());
+			throw new NoWeatherDataAvailableException("Error occurred during OpenweatherMap API fetch with status code" + responseSourceJson.getCod());
 		}
 
-		int statusCode = 0;
-		String error_message = null;
-		if (node != null) {
-			statusCode = node.get("cod").asInt();
-			error_message = node.get("message").asText();
-		}
-
-		LOG.info("status code " + statusCode);
-		LOG.info("Error message " + error_message);
-
-		if (statusCode == 401 || statusCode == 400) {
-
-			throw new NoWeatherDataAvailableException("Error thrown with message " + error_message);
-		}
-
-		WeatherResponseModel weatherRes = WeatherResponseConverter.parseJsonSource(resSourceJsonString.toString());
-
-		LOG.info("weatherRes " + weatherRes);
+		WeatherResponseModel weatherRes = WeatherResponseConverter.parseJsonSource(responseSourceJson);
 
 		return weatherRes;
 
@@ -75,8 +51,12 @@ public class WeatherResource {
 	@GET
 	@Path("/city/{name}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Object getByCity(@PathParam("name") String city) throws NoWeatherDataAvailableException {
+	public WeatherResponseModel getByCity(@PathParam("name") String city) throws NoWeatherDataAvailableException {
 
-		return weatherService.getByCity(city, appid);
+		OpenWeatherMapResponse responseSourceJson = weatherService.getByCity(city, appid);
+		
+		WeatherResponseModel weatherRes = WeatherResponseConverter.parseJsonSource(responseSourceJson);
+		
+		return weatherRes;
 	}
 }
