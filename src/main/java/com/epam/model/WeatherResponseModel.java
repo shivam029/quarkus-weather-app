@@ -1,24 +1,27 @@
 package com.epam.model;
 
-
 public class WeatherResponseModel {
+	
 	private double temp;
 	private double pressure;
 	private double humidity;
-    private double temp_min;
-    private double temp_max;
+	private double temp_min;
+	private double temp_max;
 	private double grnd_level;
 	private double sea_level;
 	private double feels_like;
+	private double latitude;
+	private double longitude;
+	private int statuscode;
+	private String message;
 	
 	public WeatherResponseModel() {
 		super();
 	}
 	
-	
-	
 	public WeatherResponseModel(double temp, double pressure, double humidity, double temp_min, double temp_max,
-			double grnd_level, double sea_level, double feels_like) {
+			double grnd_level, double sea_level, double feels_like, double latitude, double longitude, int statuscode,
+			String message) {
 		super();
 		this.temp = temp;
 		this.pressure = pressure;
@@ -28,9 +31,11 @@ public class WeatherResponseModel {
 		this.grnd_level = grnd_level;
 		this.sea_level = sea_level;
 		this.feels_like = feels_like;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.statuscode = statuscode;
+		this.message = message;
 	}
-
-
 
 	public double getTemp() {
 		return temp;
@@ -80,13 +85,39 @@ public class WeatherResponseModel {
 	public void setFeels_like(double feels_like) {
 		this.feels_like = feels_like;
 	}
+	public double getLatitude() {
+		return latitude;
+	}
+    public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+    public double getLongitude() {
+		return longitude;
+	}
+    public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+    public int getStatuscode() {
+		return statuscode;
+	}
+    public void setStatuscode(int statuscode) {
+		this.statuscode = statuscode;
+	}
+    public String getMessage() {
+		return message;
+	}
+    public void setMessage(String message) {
+		this.message = message;
+	}
+
 	@Override
 	public String toString() {
 		return "WeatherResponseModel [temp=" + temp + ", pressure=" + pressure + ", humidity=" + humidity
 				+ ", temp_min=" + temp_min + ", temp_max=" + temp_max + ", grnd_level=" + grnd_level + ", sea_level="
-				+ sea_level + ", feels_like=" + feels_like + "]";
+				+ sea_level + ", feels_like=" + feels_like + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", statuscode=" + statuscode + ", message=" + message + "]";
 	}
-	
+
 	
 
 }
